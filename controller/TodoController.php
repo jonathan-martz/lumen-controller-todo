@@ -16,8 +16,7 @@
 		public function select(Request $request){
 			$validation = $this->validate($request, []);
 
-			$this->addResult('status', 'success');
-			$this->addResult('message', 'All your Todos.');
+			$this->addMessage('success','All your Todos.');
 
 			return $this->getResponse();
 		}
