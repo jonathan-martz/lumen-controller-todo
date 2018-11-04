@@ -16,6 +16,14 @@
 		public function select(Request $request){
 			$validation = $this->validate($request, []);
 
+			$user = $request->user();
+
+			$todos = DB::connection('mysql.read')
+					   ->table('todos')
+					   ->where('id','=',$user->getAuthIdentifier())
+					   ->get();
+
+			$this->addResult('todos',$todos);
 			$this->addMessage('success','All your Todos.');
 
 			return $this->getResponse();
