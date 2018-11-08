@@ -31,6 +31,35 @@
 		 * @param  Request  $request
 		 * @return Response
 		 */
+		public function view(Request $request){
+			$validation = $this->validate($request, [
+				'id' => 'bail|required|integer'
+			]);
+
+			$id = $request->input('id');
+
+			$todo = DB::connection('mysql.read')
+					  ->table('todos')
+					  ->where('UID','=',$request->user()->getAuthIdentifier())
+					  ->where('id','=',$id);
+
+			$count = $todo->count();
+
+			if($count === 1){
+				$this->addResult('todo',$todo->first());
+				$this->addMessage('success','Your Todo.');
+			}
+			else{
+				$this->addMessage('success','Todo doesnt exists.');
+			}
+
+			return $this->getResponse();
+		}
+
+		/**
+		 * @param  Request  $request
+		 * @return Response
+		 */
 		public function add(Request $request){
 			$validation = $this->validate($request, [
 				'todo' => 'bail|required|array',
@@ -74,6 +103,76 @@
 				else{
 					$this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
 				}
+			}
+
+			return $this->getResponse();
+		}
+
+		/**
+		 * @param  Request  $request
+		 * @return Response
+		 */
+		public function edit(Request $request){
+			$validation = $this->validate($request, [
+				'todo' => 'bail|required|array',
+				'todo.category' => 'string',
+				'todo.title' => 'string',
+				'todo.deadline' => 'integer',
+				'todo.description' => 'string',
+				'todo.prio' => 'alpha',
+			]);
+
+			$todo = $request->input('todo');
+
+			$result =  DB::connection('mysql.read')
+						 ->table('todos')
+						 ->update([
+							 'title'=>$todo['title'],
+							 'category'=>$todo['category'],
+							 'deadline'=>$todo['deadline'],
+							 'description'=>$todo['description'],
+							 'prio'=> $todo['prio']
+						 ]);
+
+			if($result){
+				$this->addMessage('success','Todo updated successful');
+			}
+			else{
+				$this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
+			}
+
+			return $this->getResponse();
+		}
+
+		/**
+		 * @param  Request  $request
+		 * @return Response
+		 */
+		public function delete(Request $request){
+			$validation = $this->validate($request, [
+				'id' => 'bail|required|integer'
+			]);
+
+			$id = $request->input('id');
+
+			$todo = DB::connection('mysql.write')
+					  ->table('todos')
+					  ->where('id','=',$id)
+					  ->where('UID','=',$request->user()->getAuthIdentifier());
+
+			$count = $todo->count();
+
+			if($count === 1){
+				$result = $todo->delete();
+				if($result){
+					$this->addMessage('success','Todo successful removed.');
+				}
+				else{
+					$this->addMessage('warning','Upps something went wrong.');
+				}
+			}
+			else{
+				$this->addMessage('warning','Todo doesnt exists.');
 			}
 
 			return $this->getResponse();
