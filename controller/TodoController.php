@@ -63,11 +63,11 @@
 		public function add(Request $request){
 			$validation = $this->validate($request, [
 				'todo' => 'bail|required|array',
-				'todo.category' => 'bail|required|string',
+				'todo.category' => 'string',
 				'todo.title' => 'bail|required|string',
 				'todo.deadline' => 'integer',
-				'todo.description' => 'bail|required|string',
-				'todo.prio' => 'bail|required|alpha',
+				'todo.description' => 'string',
+				'todo.prio' => 'alpha'
 			]);
 
 			$todo = $request->input('todo');
@@ -77,6 +77,7 @@
 					   ->where('title','=',$todo['title'])
 					   ->where('description','=',$todo['description'])
 					   ->where('category','=',$todo['category'])
+					   ->where('status','=','open')
 					   ->where('UID','=',$request->user()->getAuthIdentifier());
 
 			$count = $todos->count();
@@ -93,6 +94,7 @@
 								 'category'=>$todo['category'],
 								 'deadline'=>$todo['deadline'],
 								 'description'=>$todo['description'],
+								 'status'=>'open',
 								 'prio'=> $todo['prio'],
 								 'UID' =>$request->user()->getAuthIdentifier()
 							 ]);
@@ -120,6 +122,7 @@
 				'todo.deadline' => 'integer',
 				'todo.description' => 'string',
 				'todo.prio' => 'alpha',
+				'todo.status' => 'required|string'
 			]);
 
 			$todo = $request->input('todo');
@@ -131,7 +134,8 @@
 							 'category'=>$todo['category'],
 							 'deadline'=>$todo['deadline'],
 							 'description'=>$todo['description'],
-							 'prio'=> $todo['prio']
+							 'prio'=> $todo['prio'],
+							 'status'=> $todo['status']
 						 ]);
 
 			if($result){
@@ -164,12 +168,7 @@
 
 			if($count === 1){
 				$result = $todo->delete();
-				if($result){
-					$this->addMessage('success','Todo successful removed.');
-				}
-				else{
-					$this->addMessage('warning','Upps something went wrong.');
-				}
+				$this->addMessage('success','Todo successful removed.');
 			}
 			else{
 				$this->addMessage('warning','Todo doesnt exists.');
