@@ -19,6 +19,7 @@
 			$todos = DB::connection('mysql.read')
 					   ->table('todos')
 					   ->where('UID','=',$request->user()->getAuthIdentifier())
+					   ->where('status','=','open')
 					   ->get();
 
 			$this->addResult('todos',$todos);
@@ -118,6 +119,7 @@
 			$validation = $this->validate($request, [
 				'todo' => 'bail|required|array',
 				'todo.category' => 'string',
+				'todo.id' => 'integer',
 				'todo.title' => 'string',
 				'todo.deadline' => 'integer',
 				'todo.description' => 'string',
@@ -129,6 +131,8 @@
 
 			$result =  DB::connection('mysql.read')
 						 ->table('todos')
+						 ->where('id', '=', $todo['id'])
+						 ->where('UID','=',$request->user()->getAuthIdentifier())
 						 ->update([
 							 'title'=>$todo['title'],
 							 'category'=>$todo['category'],
