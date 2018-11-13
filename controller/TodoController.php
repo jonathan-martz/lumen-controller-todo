@@ -88,7 +88,7 @@
 				$this->addMessage('error','Todo already exists('.$existing->id.').');
 			}
 			else{
-				$result =  DB::connection('mysql.read')
+				$result =  DB::connection('mysql.write')
 							 ->table('todos')
 							 ->insert([
 								 'title'=>$todo['title'],
@@ -129,7 +129,7 @@
 
 			$todo = $request->input('todo');
 
-			$result =  DB::connection('mysql.read')
+			$result =  DB::connection('mysql.write')
 						 ->table('todos')
 						 ->where('id', '=', $todo['id'])
 						 ->where('UID','=',$request->user()->getAuthIdentifier())
