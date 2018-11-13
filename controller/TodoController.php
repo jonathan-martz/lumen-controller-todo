@@ -101,7 +101,7 @@
 							 ]);
 
 				if($result){
-					$this->addMessage('success','All your Todos.');
+					$this->addMessage('success','Todo succesfull created.');
 				}
 				else{
 					$this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
