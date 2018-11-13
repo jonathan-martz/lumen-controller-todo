@@ -171,7 +171,7 @@
 			$count = $todo->count();
 
 			if($count === 1){
-				$result = $todo->delete();
+				$todo->delete();
 				$this->addMessage('success','Todo successful removed.');
 			}
 			else{
