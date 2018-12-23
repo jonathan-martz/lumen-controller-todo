@@ -9,19 +9,33 @@ use \Illuminate\Support\Facades\Hash;
 
 class TodoController extends Controller
 {
+    public function filter($connection, $filters)
+    {
+        foreach ($filters as $key => $filter) {
+            if (count($filter)) {
+                $connection->where($filter[0], $filter[1], $filter[2]);
+            }
+        }
+        return $connection;
+    }
+
     /**
      * @param  Request $request
      * @return Response
      */
     public function select(Request $request)
     {
-        $validation = $this->validate($request, []);
+        $validation = $this->validate($request, [
+            'filter' => 'array|required'
+        ]);
 
-        $todos = DB::connection('mysql.read')
+        $connection = DB::connection('mysql.read')
             ->table('todos')
-            ->where('UID', '=', $request->user()->getAuthIdentifier())
-            ->where('status', '=', 'open')
-            ->get();
+            ->where('UID', '=', $request->user()->getAuthIdentifier());
+
+        $filter = $request->input('filter');
+        $connection = $this->filter($connection, $filter);
+        $todos = $connection->get();
 
         $this->addResult('todos', $todos);
         $this->addMessage('success', 'All your Todos.');
@@ -100,7 +114,7 @@ class TodoController extends Controller
                 ]);
 
             if ($result) {
-                $this->addMessage('success', 'All your Todos.');
+                $this->addMessage('success', 'Todo added successfull.');
             } else {
                 $this->addMessage('warning', 'Upps da ist wohl was schief gelaufen.');
             }
@@ -121,6 +135,7 @@ class TodoController extends Controller
             'todo.category' => 'string',
             'todo.title' => 'string',
             'todo.deadline' => 'integer',
+            'todo.status' => 'integer',
             'todo.description' => 'string',
             'todo.prio' => 'alpha',
         ]);
@@ -171,7 +186,8 @@ class TodoController extends Controller
             $result = $todo->delete();
             if ($result) {
                 $this->addMessage('success', 'Todo successful removed.');
-            } else {
+            }
+            else {
                 $this->addMessage('warning', 'Upps something went wrong.');
             }
         } else {
