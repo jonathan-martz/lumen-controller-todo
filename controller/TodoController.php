@@ -11,7 +11,7 @@ class TodoController extends Controller
 {
     public function filter($connection, $filters){
         foreach($filters as $key => $filter){
-            if(count($filter)){
+            if(count($filter) === 3){
                 $connection->where($filter[0],$filter[1],$filter[2]);
             }
         }
@@ -89,6 +89,7 @@ class TodoController extends Controller
         $todos = DB::connection('mysql.read')
             ->table('todos')
             ->where('title','=',$todo['title'])
+            ->where('status','=','open')
             ->where('description','=',$todo['description'])
             ->where('category','=',$todo['category'])
             ->where('UID','=',$request->user()->getAuthIdentifier());
