@@ -79,8 +79,6 @@ class TodoController extends Controller
             'todo' => 'bail|required|array',
             'todo.category' => 'bail|required|string',
             'todo.title' => 'bail|required|string',
-            'todo.deadline' => 'integer',
-            'todo.description' => 'bail|required|string',
             'todo.prio' => 'bail|required|alpha',
         ]);
 
@@ -90,7 +88,6 @@ class TodoController extends Controller
             ->table('todos')
             ->where('title','=',$todo['title'])
             ->where('status','=','open')
-            ->where('description','=',$todo['description'])
             ->where('category','=',$todo['category'])
             ->where('UID','=',$request->user()->getAuthIdentifier());
 
@@ -106,8 +103,6 @@ class TodoController extends Controller
                 ->insert([
                     'title'=>$todo['title'],
                     'category'=>$todo['category'],
-                    'deadline'=>$todo['deadline'],
-                    'description'=>$todo['description'],
                     'prio'=> $todo['prio'],
                     'UID' =>$request->user()->getAuthIdentifier()
                 ]);
@@ -133,9 +128,7 @@ class TodoController extends Controller
             'todo.id' => 'bail|required|integer',
             'todo.category' => 'string',
             'todo.title' => 'string',
-            'todo.deadline' => 'integer',
             'todo.status' => 'string',
-            'todo.description' => 'string',
             'todo.prio' => 'alpha',
         ]);
 
@@ -148,8 +141,6 @@ class TodoController extends Controller
                 'title'=>$todo['title'],
                 'status'=>$todo['status'],
                 'category'=>$todo['category'],
-                'deadline'=>$todo['deadline'],
-                'description'=>$todo['description'],
                 'prio'=> $todo['prio']
             ]);
 
