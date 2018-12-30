@@ -18,13 +18,21 @@ class TodoController extends Controller
         return $connection;
     }
 
+    public function orderBy($connection, $orderby){
+        if(count($orderby) === 2){
+            $connection->orderBy($orderby[0],$orderby[1]);
+        }
+        return $connection;
+    }
+
     /**
      * @param  Request  $request
      * @return Response
      */
     public function select(Request $request){
         $validation = $this->validate($request, [
-            'filter' => 'array|required'
+            'filter' => 'array|required',
+            'orderby' => 'array|required'
         ]);
 
         $connection = DB::connection('mysql.read')
@@ -32,7 +40,11 @@ class TodoController extends Controller
             ->where('UID','=',$request->user()->getAuthIdentifier());
 
         $filter = $request->input('filter');
+        $orderby = $request->input('orderby');
+
         $connection = $this->filter($connection,$filter);
+        $connection = $this->orderBy($connection,$orderby);
+
         $todos = $connection->get();
 
         $this->addResult('todos',$todos);
