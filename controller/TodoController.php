@@ -199,4 +199,34 @@ class TodoController extends Controller
 
         return $this->getResponse();
     }
+    /**
+     * @param  Request  $request
+     * @return Response
+     */
+    public function autocomplete(Request $request){
+        $validation = $this->validate($request, [
+            'autocomplete' => 'bail|required|string'
+        ]);
+
+        $autocomplete = $request->input('autocomplete');
+
+        $connection = DB::connection('mysql.write')
+            ->table('todos')
+            ->where('UID','=',$request->user()->getAuthIdentifier())
+            ->distinct()
+            ->select($autocomplete)
+            ->get();
+
+        $count = $connection->count();
+
+        if($count > 0){
+            $this->addResult('autocomplete', $connection);
+            $this->addMessage('success','Upps something went wrong.');
+        }
+        else{
+            $this->addMessage('warning','No autocomplete available.');
+        }
+
+        return $this->getResponse();
+    }
 }
