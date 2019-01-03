@@ -123,7 +123,7 @@ class TodoController extends Controller
                 $this->addMessage('success','Todo added successfull.');
             }
             else{
-                $this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
+                $this->addMessage('warning','Upps da ist wohl was schief gelaufen. (Add failed)');
             }
         }
 
@@ -160,7 +160,7 @@ class TodoController extends Controller
             $this->addMessage('success','Todo updated successful');
         }
         else{
-            $this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
+            $this->addMessage('warning','Upps da ist wohl was schief gelaufen. (Update failed)');
         }
 
         return $this->getResponse();
@@ -190,7 +190,7 @@ class TodoController extends Controller
                 $this->addMessage('success','Todo successful removed.');
             }
             else{
-                $this->addMessage('warning','Upps something went wrong.');
+                $this->addMessage('warning','Upps something went wrong. (delete failed)');
             }
         }
         else{
@@ -221,7 +221,7 @@ class TodoController extends Controller
 
         if($count > 0){
             $this->addResult('autocomplete', $connection);
-            $this->addMessage('success','Upps something went wrong.');
+            $this->addMessage('success','Autocomplete ready.');
         }
         else{
             $this->addMessage('warning','No autocomplete available.');
