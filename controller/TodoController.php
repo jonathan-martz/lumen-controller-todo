@@ -35,8 +35,7 @@ class TodoController extends Controller
             'orderby' => 'array|required'
         ]);
 
-        $connection = DB::connection('mysql.read')
-            ->table('todos')
+        $connection = DB::table('todos')
             ->where('UID','=',$request->user()->getAuthIdentifier());
 
         $filter = $request->input('filter');
@@ -64,8 +63,7 @@ class TodoController extends Controller
 
         $id = $request->input('id');
 
-        $todo = DB::connection('mysql.read')
-            ->table('todos')
+        $todo = DB::table('todos')
             ->where('UID','=',$request->user()->getAuthIdentifier())
             ->where('id','=',$id);
 
@@ -96,8 +94,7 @@ class TodoController extends Controller
 
         $todo = $request->input('todo');
 
-        $todos = DB::connection('mysql.read')
-            ->table('todos')
+        $todos = DB::table('todos')
             ->where('title','=',$todo['title'])
             ->where('status','=','open')
             ->where('category','=',$todo['category'])
@@ -110,8 +107,7 @@ class TodoController extends Controller
             $this->addMessage('error','Todo already exists('.$existing->id.').');
         }
         else{
-            $result =  DB::connection('mysql.read')
-                ->table('todos')
+            $result =  DB::table('todos')
                 ->insert([
                     'title'=>$todo['title'],
                     'category'=>$todo['category'],
@@ -123,7 +119,7 @@ class TodoController extends Controller
                 $this->addMessage('success','Todo added successfull.');
             }
             else{
-                $this->addMessage('warning','Upps da ist wohl was schief gelaufen. (Add failed)');
+                $this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
             }
         }
 
@@ -146,8 +142,7 @@ class TodoController extends Controller
 
         $todo = $request->input('todo');
 
-        $result =  DB::connection('mysql.write')
-            ->table('todos')
+        $result =  DB::table('todos')
             ->where('id','=',$todo['id'])
             ->update([
                 'title'=>$todo['title'],
@@ -160,7 +155,7 @@ class TodoController extends Controller
             $this->addMessage('success','Todo updated successful');
         }
         else{
-            $this->addMessage('warning','Upps da ist wohl was schief gelaufen. (Update failed)');
+            $this->addMessage('warning','Upps da ist wohl was schief gelaufen.');
         }
 
         return $this->getResponse();
@@ -177,8 +172,7 @@ class TodoController extends Controller
 
         $id = $request->input('id');
 
-        $todo = DB::connection('mysql.write')
-            ->table('todos')
+        $todo = DB::table('todos')
             ->where('id','=',$id)
             ->where('UID','=',$request->user()->getAuthIdentifier());
 
@@ -190,41 +184,11 @@ class TodoController extends Controller
                 $this->addMessage('success','Todo successful removed.');
             }
             else{
-                $this->addMessage('warning','Upps something went wrong. (delete failed)');
+                $this->addMessage('warning','Upps something went wrong.');
             }
         }
         else{
             $this->addMessage('warning','Todo doesnt exists.');
-        }
-
-        return $this->getResponse();
-    }
-    /**
-     * @param  Request  $request
-     * @return Response
-     */
-    public function autocomplete(Request $request){
-        $validation = $this->validate($request, [
-            'autocomplete' => 'bail|required|string'
-        ]);
-
-        $autocomplete = $request->input('autocomplete');
-
-        $connection = DB::connection('mysql.write')
-            ->table('todos')
-            ->where('UID','=',$request->user()->getAuthIdentifier())
-            ->distinct()
-            ->select($autocomplete)
-            ->get();
-
-        $count = $connection->count();
-
-        if($count > 0){
-            $this->addResult('autocomplete', $connection);
-            $this->addMessage('success','Autocomplete ready.');
-        }
-        else{
-            $this->addMessage('warning','No autocomplete available.');
         }
 
         return $this->getResponse();
