@@ -1,5 +1,5 @@
 {
-    "name":"mkaaaaaaay/lumen-todo-controller",
+    "name":"jonathan-martz/lumen-todo-controller",
     "description":"Php Lumen Todo Controller",
     "require":{
         "php":"^7.1",
